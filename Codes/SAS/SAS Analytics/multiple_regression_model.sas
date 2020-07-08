@@ -61,3 +61,26 @@ proc reg data = fitness plots(only) = (cp);
                  / selection = cp ruare adjrsq best = 20;
   title "All possible regression using Cp";
 quit;
+
+** Automatic Selection Methods;
+proc reg data = fitness plots(only) = adjrsq;
+  FORWARD: model Oxygen_Consumption = Performance RunTime age weight 
+                                      run_pulse rest_pulse maximum_pulse
+                 / selection = forward;
+  BACKWARD: model Oxygen_Consumption = Performance RunTime age weight 
+                                      run_pulse rest_pulse maximum_pulse                 
+                 / selection = backward;     
+  STEPWISE: model Oxygen_Consumption = Performance RunTime age weight 
+                                      run_pulse rest_pulse maximum_pulse                 
+                 / selection = stepwise;                      
+  title "Best Models automatic model selection methods";
+quit;
+
+** Residual Analysis for Model selected based on Cp statistics for predction;
+proc reg data = fitness 
+         plots(only) = (QQ /*Quantile-Quantile plot of residuals*/ 
+                        residualbypredicted /*Residual by Predicted values*/ 
+                        residuals /*Residual by predictor variables*/);
+  Predict: model Oxygen_Consumption = RunTime age  run_pulse maximum_pulse;
+  title "Residual Analysis for Predict Model";
+quit;
