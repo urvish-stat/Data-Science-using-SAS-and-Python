@@ -1326,5 +1326,33 @@ run;
 proc logistic data = titanic
      plots(only) = (effect oddsratio);
   model survived(event = '1') = age;
-  title "Logistic Model: (Survived = Age)";
+  title "Logistic Model1: (Survived = Age)";
+quit;
+
+** Multiple Logistic Regression Model with categorical predictors;
+proc logistic data = titanic
+     plots(only) = (effect oddsratio);
+  class gender (ref = 'male') class (ref = '3') / param = ref;
+  model survived(event = '1') = age gender class;
+  title "Logistic Model2: (Survived = Age Gender Class)";
+quit;
+
+** Multiple Logistic Regression Model with interaction terms and backward elimination;
+proc logistic data = titanic
+     plots(only) = (effect oddsratio);
+  class gender (ref = 'male') class (ref = '3') / param = ref;
+  model survived(event = '1') = age|gender|class @2 / selection = backward slstay = 0.01;
+  units age = 10; ** Odds ratio for every 10 years older;
+  title "Logistic Model3: Backward Elimination with (Survived = Age|Gender|Class @2)";
+quit;
+
+** Get the Odds Ratio for effects involed in interactions;
+proc logistic data = titanic
+     plots(only) = (effect oddsratio);
+  class gender (ref = 'male') class (ref = '3') / param = ref;
+  model survived(event = '1') = age|gender|class @2 / selection = backward slstay = 0.01;
+  units age = 10; ** Odds ratio for every 10 years older;
+  oddsratio gender / at (class = ALL); ** Oddsratio of Gender at ALL level of Class;
+  oddsratio class / at (gender = ALL); ** Oddsratio of Class at ALL level of Gender; 
+  title "Logistic Model3: Backward Elimination with (Survived = Age|Gender|Class @2) with Odds Ratios";
 quit;
