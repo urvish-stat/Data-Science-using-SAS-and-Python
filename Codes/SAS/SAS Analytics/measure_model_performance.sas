@@ -1,4 +1,4 @@
-libname data "D:\Documents\SAS SSO Data\SAS\SAS Stat Datasets\Demos";                                                                   
+libname data "D:\Data Science using SAS and Python\Data";                                                                   
                                                                                                                                         
 %let pi1=0.02;                                                                                                                          
                                                                                                                                         
@@ -37,15 +37,15 @@ quit;
 ods select roccurve scorefitstat;                                                                                                                           
 proc logistic data = data.train;
   model ins(event = '1') = &selected.;
-  score data = data.valid out = scoval
+  score data = data.valid out = data.scoval
     priorevent = &pi1. /* Adjust Oversample dataset */
-	outroc = roc /* Generate different roc statistics for assessment */
+	outroc = data.roc /* Generate different roc statistics for assessment */
 	fitstat /* Generate model fit statistics */;
 quit;
 	
 ** Create Confusion Matrix on Validation dataset;
-data roc;
-   set roc;
+data data.roc;
+   set data.roc;
    cutoff=_PROB_;
    specif=1-_1MSPEC_;
    tp=&pi1*_SENSIT_;
