@@ -1,5 +1,8 @@
 libname data "D:\Data Science using SAS and Python\Data";
 
+%let pi1 = 0.02;
+%let rho1 = 0.346361;
+
 /* Add the decision variable    */
 /* (based on the profit matrix) */
 /* and calculate profit         */ 
