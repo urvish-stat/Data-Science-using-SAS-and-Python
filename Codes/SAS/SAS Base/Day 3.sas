@@ -17,23 +17,6 @@ data want;
   length = length(substr);
 run;
 
-data have;
-  length full_name $25.;
-  full_name = "Urvish B Shah"; output;
-  full_name = "Sudhir Jadav"; output;
-  full_name = "Urvish B. Shah"; output;
-  full_name = "Urvish Bakulkumar Shah"; output;
-run;
-
-data want(drop = last_name start: rename = (last_name1 = last_name));
-  set have;
-  startpos = index(full_name, " ")+1;
-  last_name = substr(full_name, startpos);
-  startpos1 = index(strip(last_name), " ")+1;
-  if startpos1 = 0 then last_name1 = last_name;
-  else last_name1 = substr(last_name,startpos1);
-run;
-
 ** SAS Numeric Functions;
 data want;
   min = min(100,1000,10000);
@@ -166,9 +149,9 @@ run;
 ods trace off;
 
 ** Proc Freq;
-proc freq data = sashelp.shoes;
+proc freq data = sashelp.shoes order = freq;
   tables region;
-  tables region * product;
+  tables region * product / nocol nopercent;
 run;
 
 
