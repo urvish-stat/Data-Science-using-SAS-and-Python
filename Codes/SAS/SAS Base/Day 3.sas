@@ -17,6 +17,23 @@ data want;
   length = length(substr);
 run;
 
+data have;
+  length full_name $25.;
+  full_name = "Urvish B Shah"; output;
+  full_name = "Sudhir Jadav"; output;
+  full_name = "Urvish B. Shah"; output;
+  full_name = "Urvish Bakulkumar Shah"; output;
+run;
+
+data want(drop = last_name start: rename = (last_name1 = last_name));
+  set have;
+  startpos = index(full_name, " ")+1;
+  last_name = substr(full_name, startpos);
+  startpos1 = index(strip(last_name), " ")+1;
+  if startpos1 = 0 then last_name1 = last_name;
+  else last_name1 = substr(last_name,startpos1);
+run;
+
 ** SAS Numeric Functions;
 data want;
   min = min(100,1000,10000);
@@ -48,6 +65,7 @@ run;
 
 data one;
   input name $ age;
+  height = 5;
   cards;
 Name1 20
 Name2 30
@@ -56,11 +74,11 @@ Name3 40
 run;
 
 data two;
-  input name $ age;
+  input name $12. age;
   cards;
-Name5 20
-Name6 30
-Name7 40
+Name5 Name5 20
+Name6 Name6 30
+Name7 Name7 40
 ;
 run;
 
@@ -68,8 +86,13 @@ data both;
   set one two;
 run;
 
-proc append base = one data = two; 
+proc append base = one data = two force;  
 run;
+
+1. pos_sales
+proc append base = total_sales data = iter1_sales
+cat_sales
+sub_cat_sales
 
 ** Merging;
 1st SAS Dataset
@@ -118,21 +141,29 @@ proc sort data = two;
  by name;
 run;
 
-data both;
-  merge one two;
+data both(drop = i);
+  merge one two;  
   by name;
+  array num_vars {*} _NUMERIC_;  
+  do i = 1 to dim(num_vars);
+    if missing(num_vars{i}) then num_vars{i} = 0;
+  end;
 run;
 
 ** Proc Means;
-proc means data = sashelp.shoes mean median std stderr clm;
+proc means data = sashelp.shoes nway mean median std stderr clm;
   class region product;
   var sales;
+  output out = shoes_desc_stat mean = mean median = median std = std stderr = stderr;
 run;
 
 ** Proc Univarite;
+ods trace on;
+ods select BasicMeasures;
 proc univariate data = sashelp.shoes;
   var sales;
 run;
+ods trace off;
 
 ** Proc Freq;
 proc freq data = sashelp.shoes;
